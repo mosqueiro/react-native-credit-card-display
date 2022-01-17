@@ -6,12 +6,27 @@ import {
   ImageBackground,
   Image,
   ImageSourcePropType,
+  Dimensions
 } from 'react-native';
 
 import FlipCard from 'react-native-flip-card';
 import creditcardutils from 'creditcardutils';
+import ShimmerPlaceHolder from 'react-native-shimmer-placeholder';
+
+creditcardutils.cards = [
+  {
+    type: 'elo',
+    pattern: /^[0-9]/,
+    format: /(\d{1,4})/g,
+    length: [16],
+    cvcLength: [3],
+    luhn: true
+  }
+];
 
 type Props = {
+  translate?: object;
+
   /** Number to display on the front of the card */
   number: number | string;
 
@@ -26,6 +41,8 @@ type Props = {
 
   /** Year for `Customer Since` */
   since?: number | string;
+
+  loading?: boolean;
 
   /** Additional styles to apply to the front of the card */
   frontStyles?: object;
@@ -66,20 +83,24 @@ type Props = {
 
 const defaultProps = {
   height: 190,
-  width: 300,
-  fontSize: 15,
-  fontColor: '#FFFFFF',
+  width: (Dimensions.get('window').width >= 768 ? 500 : 360),
+  fontSize: 16,
+  fontColor: '#222222',
   friction: 6,
-  flipped: false,
+  flipped: true,
   borderRadius: 20,
   frontImage: require('./assets/images/card-front.png'),
   backImage: require('./assets/images/card-back.png'),
+  // logoImage: require('./assets/images/logo-2.png'),
+  chipImage: require('./assets/images/chip.png'),
+  eloImage: require('./assets/images/elo.png'),
 };
 
 const CreditCardDisplay = (props: Props) => {
   let cardTypeIcon = null;
 
-  switch (creditcardutils.parseCardType(props.number as string)) {
+  // switch (creditcardutils.parseCardType(props.number as string))
+  switch ('elo') {
     case 'amex':
       cardTypeIcon = {
         uri:
@@ -134,139 +155,243 @@ const CreditCardDisplay = (props: Props) => {
           'data:image/png;base64,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',
       };
       break;
+    case 'elo':
+      cardTypeIcon = {
+        uri:
+          'data:image/png;base64,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',
+      };
+      break;
+
   }
 
   return (
     <View style={{ height: props.height, width: props.width }}>
-      <FlipCard
+      {/* <FlipCard
         style={props.cardStyles}
         flipHorizontal={true}
         flipVertical={false}
         flip={props.flipped}
-      >
-        <View style={props.frontStyles}>
-          <View style={{ height: props.height, width: props.width }}>
-            <ImageBackground
+      > */}
+      {/* props.frontStyles */}
+      {/* <View style={props.frontStyles}>
+        <View style={{ height: props.height, width: props.width }}>
+          <ImageBackground
               source={props.frontImage}
               style={styles.imageBackground}
               imageStyle={{ borderRadius: props.borderRadius }}
             >
-              <View style={styles.imageContainer}>
-                <View style={{ flexGrow: 1 }} />
+          <View
+            style={styles.cardBackground}
+            imageStyle={{ borderRadius: props.borderRadius }}>
 
+
+            <View style={{ height: '45%' }} />
+
+            <View style={{ flexDirection: 'row' }}>
+              <View style={{ width: '82%' }} />
+
+              <Text style={{ fontSize: props.fontSize, alignSelf: 'center' }}>
+                  {props.cvc}
+                </Text>
+            </View>
+
+
+            </ImageBackground>
+          </View>
+        </View>
+      </View> */}
+      {/* props.backStyles */}
+      <View style={props.backStyles}>
+        <View style={{ height: props.height, width: props.width }}>
+          {/* <ImageBackground
+              source={props.backImage}
+              style={styles.imageBackground}
+              imageStyle={{ borderRadius: 15 }}
+            > */}
+          <View
+            style={styles.cardBackground}
+          >
+            <View style={styles.topImageContainer}>
+              <Image
+                source={props.chipImage}
+                style={styles.chipImg}
+              />
+            {/* <Image
+                source={props.logoImage}
+                style={styles.logoImg}
+                resizeMode='cover'
+              /> */}
+              <View style={styles.cvvContainer}>
+              <Text
+                style={{
+                  // ...styles.groupLabel,
+                  fontSize: props.fontSize * 0.8,
+                  color: props.fontColor,
+                   //marginLeft: 20
+                  // textAlign: 'right',
+                }}
+              >
+                CVV 
+              </Text>
+
+              {props.loading ? (
+                  <ShimmerPlaceHolder style={{ marginTop: 2, marginBottom: 2, marginLeft: 10 ,borderRadius: 4 }} height={14} width={25} autoRun={false} />
+              ) : (
                 <Text
                   style={{
-                    fontSize: props.fontSize,
-                    alignSelf: 'center',
+                    fontSize: props.fontSize * 0.8,
                     color: props.fontColor,
+                    paddingLeft: 10
+                    // marginTop: 20
                   }}
                 >
+                  {props.cvc}
+                </Text>
+              )}
+              </View>
+            </View>
+            
+
+            <View style={styles.imageContainer}>
+              <View style={{ flexGrow: 1 }} />
+              {/* <Text
+                style={{
+                  ...styles.groupLabel,
+                  fontSize: props.fontSize * 0.6,
+                  color: props.fontColor,
+                }}
+              >
+                {props.translate.t('titleCardNumber')}
+              </Text> */}
+              {props.loading ? (
+                <View style={{ marginBottom: 10, alignItems: 'center' }}>
+                  <ShimmerPlaceHolder style={{ borderRadius: 4}} height={20} width={235} autoRun={false} />
+                </View>
+              ) : (
+                <Text style={{ fontSize: props.fontSize * 1.5, color: props.fontColor, textAlign: 'center', marginBottom: 10, }}>
                   {creditcardutils.formatCardNumber(String(props.number))}
                 </Text>
+              )}
 
-                <View style={styles.rowContainer}>
-                  <View style={styles.groupContainer}>
-                    {props.since && (
-                      <>
+              {/* <Textspace-between
+                style={{
+                  fontSize: props.fontSize * 0.9,
+                  // alignSelf: 'center',
+                  color: props.fontColor,
+                }}
+              >
+                {creditcardutils.formatCardNumber(String(props.number))}
+              </Text> */}
+
+              <View style={styles.rowContainer}>
+                <View style={styles.groupContainer}>
+                  {props.expiration && (
+                    <>
+                      <Text
+                        style={{
+                          ...styles.groupLabel,
+                          fontSize: props.fontSize * 0.8,
+                          color: props.fontColor,
+                          textAlign: 'center',
+                        }}
+                      >
+                        {props.translate.t('titleValidThru')}
+                      </Text>
+                      {props.loading ? (
+                        <ShimmerPlaceHolder style={{ marginTop: 2, marginBottom: 2, marginLeft: 15 ,borderRadius: 4 }} height={14} width={25} autoRun={false} />
+                      ) : (
                         <Text
                           style={{
-                            ...styles.groupLabel,
-                            fontSize: props.fontSize * 0.7,
+                            fontSize: props.fontSize * 0.8,
                             color: props.fontColor,
-                            textAlign: 'right',
-                          }}
-                        >
-                          CUSTOMER{'\n'}SINCE
-                        </Text>
-
-                        <Text
-                          style={{
-                            fontSize: props.fontSize * 0.7,
-                            color: props.fontColor,
-                          }}
-                        >
-                          {props.since}
-                        </Text>
-                      </>
-                    )}
-                  </View>
-
-                  <View style={styles.groupContainer}>
-                    {props.expiration && (
-                      <>
-                        <Text
-                          style={{
-                            ...styles.groupLabel,
-                            fontSize: props.fontSize * 0.7,
-                            color: props.fontColor,
-                            textAlign: 'center',
-                          }}
-                        >
-                          VALID{'\n'}THRU
-                        </Text>
-
-                        <Text
-                          style={{
-                            fontSize: props.fontSize * 0.7,
-                            color: props.fontColor,
+                            marginLeft: 15
                           }}
                         >
                           {creditcardutils.formatCardExpiry(props.expiration)}
                         </Text>
-                      </>
-                    )}
-                  </View>
-                  <View style={styles.cardTypeIconContainer}>
-                    {cardTypeIcon && (
-                      <Image
-                        source={cardTypeIcon}
-                        style={styles.cardTypeIcon}
-                        resizeMode="contain"
-                      />
-                    )}
-                  </View>
+                      )}
+                    </>
+                  )}
                 </View>
-                <Text
-                  style={{
-                    fontSize: props.fontSize,
-                    marginTop: 5,
-                    color: props.fontColor,
-                  }}
-                >
-                  {props.name}
-                </Text>
+                <View style={styles.bottomImageContainer}>          
+                {props.loading ? (
+                  <ShimmerPlaceHolder style={{ marginTop: 2, marginBottom: 2, borderRadius: 4 }} height={14} width={150} autoRun={false} />
+                ) : (
+                  <Text
+                    style={{
+                      fontSize: props.fontSize * 0.9,
+                      marginTop: 5,
+                      color: props.fontColor,
+                    }}
+                  >
+                    {props.name}
+                  </Text>
+                )}
+                  <Image
+                    source={props.eloImage}
+                    style={styles.eloImg}
+                    resizeMode='cover'
+                  />
+                </View>
               </View>
-            </ImageBackground>
+              
+            </View>
+           
+
           </View>
+          {/* </ImageBackground> */}
         </View>
-
-        <View style={props.backStyles}>
-          <View style={{ height: props.height, width: props.width }}>
-            <ImageBackground
-              source={props.backImage}
-              style={styles.imageBackground}
-              imageStyle={{ borderRadius: 15 }}
-            >
-              <View style={{ height: '45%' }} />
-
-              <View style={{ flexDirection: 'row' }}>
-                <View style={{ width: '82%' }} />
-
-                <Text style={{ fontSize: props.fontSize, alignSelf: 'center' }}>
-                  {props.cvc}
-                </Text>
-              </View>
-            </ImageBackground>
-          </View>
-        </View>
-      </FlipCard>
-    </View>
+      </View>
+      {/* </FlipCard> */}
+    </View >
   );
 };
 
 export default CreditCardDisplay;
 
 const styles = StyleSheet.create({
+  cardBackground: {
+    height: '100%',
+    width: '100%',
+    backgroundColor: '#38b35a',
+    borderRadius: 20,
+    // flex: 1, 
+    // justifyContent: 'center',
+  },
+  topImageContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  bottomImageContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  cvvContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop : 45,
+    marginRight : 30
+  },
+  chipImg: {
+    height: 30,
+    width: 27 * (125 / 80),
+    marginTop: 45,
+    marginLeft: 30
+  },
+  logoImg: {
+    // height: 30,
+    // width: 70 * (125 / 80),
+    marginTop: 20,
+    marginRight: 20
+  },
+  eloImg: {
+    height: 25,
+    width: 45,
+    marginBottom: 20,
+    // marginTop: 20,
+    // marginRight: 20
+    // marginLeft: '77%',
+  },
   imageBackground: {
     height: '100%',
     width: '100%',
@@ -274,7 +399,7 @@ const styles = StyleSheet.create({
   groupContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginRight: '2%',
+    //marginRight: '2%',
   },
   groupLabel: {
     textAlignVertical: 'center',
@@ -283,6 +408,9 @@ const styles = StyleSheet.create({
   imageContainer: {
     padding: 15,
     flex: 1,
+    marginHorizontal: 20
+    // marginBottom: '28%',
+    //marginLeft: '2%',
   },
   cardTypeIconContainer: {
     justifyContent: 'center',
@@ -296,8 +424,8 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
   },
   rowContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: 'column',
+    // justifyContent: 'space-between',
   },
 });
 
