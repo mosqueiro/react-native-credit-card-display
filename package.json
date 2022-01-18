@@ -1,6 +1,6 @@
 {
   "name": "@zcorefinance/react-native-credit-card-display",
-  "version": "0.3.7",
+  "version": "0.3.8",
   "description": "Credit Card Component for React Native -- Display Only",
   "main": "lib/commonjs/index",
   "module": "lib/module/index",
