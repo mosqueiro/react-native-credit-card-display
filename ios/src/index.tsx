@@ -83,9 +83,9 @@ type Props = {
 
 const defaultProps = {
   height: 190,
-  width: (Dimensions.get('window').width >= 768 ? 500 : 325),
+  width: (Dimensions.get('window').width >= 768 ? 500 : 360),
   fontSize: 16,
-  fontColor: '#222',
+  fontColor: '#222222',
   friction: 6,
   flipped: true,
   borderRadius: 20,
