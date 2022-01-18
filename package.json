@@ -1,6 +1,6 @@
 {
-  "name": "react-native-credit-card-display",
-  "version": "0.3.6",
+  "name": "@zcorefinance/react-native-credit-card-display",
+  "version": "0.3.7",
   "description": "Credit Card Component for React Native -- Display Only",
   "main": "lib/commonjs/index",
   "module": "lib/module/index",
@@ -37,13 +37,13 @@
     "ios",
     "android"
   ],
-  "repository": "https://github.com/SConaway/react-native-credit-card-display",
+  "repository": "https://github.com/mosqueiro/react-native-credit-card-display",
   "author": "Steven Conaway <steven.conaway@icloud.com> (https://github.com/SConaway)",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/SConaway/react-native-credit-card-display/issues"
+    "url": "https://github.com/mosqueiro/react-native-credit-card-display/issues"
   },
-  "homepage": "https://github.com/SConaway/react-native-credit-card-display#readme",
+  "homepage": "https://github.com/mosqueiro/react-native-credit-card-display#readme",
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
   },
