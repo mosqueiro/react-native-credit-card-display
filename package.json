@@ -1,6 +1,6 @@
 {
   "name": "@zcorefinance/react-native-credit-card-display",
-  "version": "0.3.8",
+  "version": "0.3.9",
   "description": "Credit Card Component for React Native -- Display Only",
   "keywords": [
     "react-native",
@@ -16,5 +16,9 @@
   "homepage": "https://github.com/mosqueiro/react-native-credit-card-display#readme",
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
-  }
+  },
+  "dependencies": {
+    "creditcardutils": "^1.0.0",
+    "react-native-flip-card": "^3.5.6"
+  }  
 }
