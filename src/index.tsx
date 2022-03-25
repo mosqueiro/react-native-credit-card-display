@@ -27,6 +27,9 @@ creditcardutils.cards = [
 type Props = {
   translate?: object;
 
+  /** Text font color. Default: #FFFFFF (White) */
+  type?: string;
+
   /** Number to display on the front of the card */
   number: number | string;
 
@@ -209,7 +212,7 @@ const CreditCardDisplay = (props: Props) => {
               imageStyle={{ borderRadius: 15 }}
             > */}
           <View
-            style={styles.cardBackground}
+            style={[{...styles.cardBackground, backgroundColor: props.type === "black" ? "#0D1114" : "#F7CB0D"}]}
           >
             <View style={styles.topImageContainer}>
               <Image
@@ -226,7 +229,7 @@ const CreditCardDisplay = (props: Props) => {
                 style={{
                   // ...styles.groupLabel,
                   fontSize: props.fontSize * 0.8,
-                  color: props.fontColor,
+                  color: props.type === "black" ? "#FFF" : props.fontColor,
                    //marginLeft: 20
                   // textAlign: 'right',
                 }}
@@ -240,7 +243,7 @@ const CreditCardDisplay = (props: Props) => {
                 <Text
                   style={{
                     fontSize: props.fontSize * 0.8,
-                    color: props.fontColor,
+                    color: props.type === "black" ? "#FFF" : props.fontColor,
                     paddingLeft: 10
                     // marginTop: 20
                   }}
@@ -268,7 +271,7 @@ const CreditCardDisplay = (props: Props) => {
                   <ShimmerPlaceHolder style={{ borderRadius: 4}} height={20} width={235} autoRun={false} />
                 </View>
               ) : (
-                <Text style={{ fontSize: props.fontSize * 1.5, color: props.fontColor, textAlign: 'center', marginBottom: 10, }}>
+                <Text style={{ fontSize: props.fontSize * 1.5, color: props.type === "black" ? "#FFF" : props.fontColor, textAlign: 'center', marginBottom: 10, }}>
                   {creditcardutils.formatCardNumber(String(props.number))}
                 </Text>
               )}
@@ -291,7 +294,7 @@ const CreditCardDisplay = (props: Props) => {
                         style={{
                           ...styles.groupLabel,
                           fontSize: props.fontSize * 0.8,
-                          color: props.fontColor,
+                          color: props.type === "black" ? "#FFF" : props.fontColor,
                           textAlign: 'center',
                         }}
                       >
@@ -303,7 +306,7 @@ const CreditCardDisplay = (props: Props) => {
                         <Text
                           style={{
                             fontSize: props.fontSize * 0.8,
-                            color: props.fontColor,
+                            color: props.type === "black" ? "#FFF" : props.fontColor,
                             marginLeft: 15
                           }}
                         >
@@ -321,7 +324,7 @@ const CreditCardDisplay = (props: Props) => {
                     style={{
                       fontSize: props.fontSize * 0.9,
                       marginTop: 5,
-                      color: props.fontColor,
+                      color: props.type === "black" ? "#FFF" : props.fontColor,
                     }}
                   >
                     {props.name}
